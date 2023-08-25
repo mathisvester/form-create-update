@@ -50,7 +50,8 @@ export class ProductFormComponent {
 
   @Output() save = new EventEmitter<{
     product: Product | NewProduct;
-    callback: () => void;
+    successCallback: () => void;
+    errorCallback: () => void;
   }>();
 
   readonly form: FormGroup<ProductForm>;
@@ -73,9 +74,15 @@ export class ProductFormComponent {
       description: this.form.controls.description.value,
     };
 
+    this.form.disable();
+
     this.save.emit({
       product,
-      callback: () => this.form.reset({ title: '', description: '' }),
+      successCallback: () => {
+        this.form.enable();
+        this.form.reset();
+      },
+      errorCallback: () => this.form.enable(),
     });
   }
 }

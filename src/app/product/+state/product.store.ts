@@ -11,7 +11,7 @@ export interface ProductsState {
 }
 
 @Injectable()
-export class ProductsStore extends ComponentStore<ProductsState> {
+export class ProductStore extends ComponentStore<ProductsState> {
   readonly products$: Observable<Product[]> = this.select(
     state => state.products
   );
@@ -36,16 +36,25 @@ export class ProductsStore extends ComponentStore<ProductsState> {
   });
 
   readonly createProduct = this.effect(
-    (product$: Observable<{ product: NewProduct; callback: () => void }>) => {
+    (
+      product$: Observable<{
+        product: NewProduct;
+        successCallback: () => void;
+        errorCallback: () => void;
+      }>
+    ) => {
       return product$.pipe(
-        exhaustMap(({ product, callback }) =>
+        exhaustMap(({ product, successCallback, errorCallback }) =>
           this.productsService.createProduct(product).pipe(
             tapResponse(
               product => {
-                callback();
+                successCallback();
                 this.addProduct(product);
               },
-              (error: HttpErrorResponse) => of(error)
+              (error: HttpErrorResponse) => {
+                errorCallback();
+                return of(error);
+              }
             )
           )
         )
@@ -54,16 +63,25 @@ export class ProductsStore extends ComponentStore<ProductsState> {
   );
 
   readonly updateProduct = this.effect(
-    (product$: Observable<{ product: Product; callback: () => void }>) => {
+    (
+      product$: Observable<{
+        product: Product;
+        successCallback: () => void;
+        errorCallback: () => void;
+      }>
+    ) => {
       return product$.pipe(
-        exhaustMap(({ product, callback }) =>
+        exhaustMap(({ product, successCallback, errorCallback }) =>
           this.productsService.updateProduct(product).pipe(
             tapResponse(
               product => {
-                callback();
+                successCallback();
                 this.replaceProduct(product);
               },
-              (error: HttpErrorResponse) => of(error)
+              (error: HttpErrorResponse) => {
+                errorCallback();
+                return of(error);
+              }
             )
           )
         )
