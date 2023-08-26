@@ -19,15 +19,13 @@ export interface ProductForm {
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   template: `
-    <form [formGroup]="form">
+    <form [formGroup]="form" (ngSubmit)="submit()">
       <input type="text" formControlName="title" placeholder="Title" />
       <input
         type="text"
         formControlName="description"
         placeholder="Description" />
-      <button type="submit" [disabled]="!form.valid" (click)="submit()">
-        Save
-      </button>
+      <button type="submit" [disabled]="!form.valid">Save</button>
     </form>
   `,
   styles: [``],

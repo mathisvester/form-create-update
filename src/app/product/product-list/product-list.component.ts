@@ -23,7 +23,7 @@ import { Product } from '../_models/product.model';
   ],
 })
 export class ProductListComponent {
-  @Output() select = new EventEmitter<number>();
   @Input() products: Product[] = [];
   @Input() selectedProduct: Product | null = null;
+  @Output() select = new EventEmitter<number>();
 }
